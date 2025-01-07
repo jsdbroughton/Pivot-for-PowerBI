@@ -1,6 +1,7 @@
 using Objects;
 using Objects.BuiltElements.Revit;
 using Speckle.Automate.Sdk;
+using Speckle.Core.Api.GraphQL.Inputs;
 using Speckle.Core.Models;
 using Speckle.Core.Models.GraphTraversal;
 
@@ -68,6 +69,36 @@ public static class AutomateFunction
       Console.WriteLine("Error: " + e.Message);
       automationContext.MarkRunException(e.Message);
     }
+  }
+
+  private static async Task<string?> ResolveModelIdByName(
+    AutomationContext automationContext,
+    string modelName
+  )
+  {
+    var client = automationContext.SpeckleClient;
+
+    // Define a filter to find the model by name
+    var filter = new ProjectModelsFilter(
+      search: modelName,
+      contributors: null,
+      sourceApps: null,
+      ids: null,
+      excludeIds: null,
+      onlyWithVersions: false
+    );
+
+    // Fetch the models matching the filter
+    var targetProjectModels = (
+      await client.Project.GetWithModels(
+        projectId: automationContext.AutomationRunData.ProjectId,
+        modelsLimit: 1, // Only need a single result
+        modelsFilter: filter
+      )
+    )?.models;
+
+    // Return the ID of the first model or null if no match is found
+    return targetProjectModels?.items.FirstOrDefault()?.id;
   }
 
   private static List<Base> PropagateNamedProperties(List<Base> objects)
