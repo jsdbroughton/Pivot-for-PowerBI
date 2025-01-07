@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 as build-env
 
 WORKDIR /src
-COPY SpeckleAutomateDotnetExample/ .
+COPY SpecklePowerPivotForRevit/ .
 RUN dotnet restore --use-current-runtime
 RUN dotnet publish --use-current-runtime --self-contained false --no-restore -o /publish
 
