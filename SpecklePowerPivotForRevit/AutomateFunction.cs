@@ -56,7 +56,27 @@ public static class AutomateFunction
         "Data from PowerPivot for Revit"
       );
 
-      automationContext.SetContextView(new List<string> { newVersion }, false);
+      // Resolve the model ID using the new method
+      var targetModelId = await ResolveModelIdByName(
+        automationContext,
+        targetModelName
+      );
+
+      if (targetModelId != null)
+      {
+        var modelVersionIdentifier = $"{targetModelId}@{newVersion}";
+        automationContext.SetContextView(
+          new List<string> { modelVersionIdentifier },
+          false
+        );
+
+        Console.WriteLine($"Context view set with: {modelVersionIdentifier}");
+      }
+      else
+      {
+        Console.WriteLine($"Error: No matching model found for the specified name.");
+        automationContext.MarkRunException("Target model not found.");
+      }
 
       Console.WriteLine("Generated target model name: " + targetModelName);
       Console.WriteLine("Received version: " + versionObject);
