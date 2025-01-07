@@ -1,6 +1,6 @@
-using Speckle.Automate.Sdk.DataAnnotations;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+
+namespace SpecklePowerPivotForRevit;
 
 /// <summary>
 /// This class describes the user specified variables that the function wants to work with.
@@ -10,23 +10,26 @@ using System.ComponentModel.DataAnnotations;
 public struct FunctionInputs
 {
   /// <summary>
-  /// The object type to count instances of in the given model version.
+  /// Determines whether instances should be resolved. Default is true.
   /// </summary>
-  [Required]
-  public string SpeckleTypeToCount;
+  [DefaultValue(true)]
+  public bool ResolveInstances { get; set; }
 
   /// <summary>
-  /// The total number of the specified type expected.
+  /// Indicates whether named properties should be propagated. Default is true.
   /// </summary>
-  [DefaultValue(10)]
-  [Range(1, 100)]
-  [Required]
-  public int SpeckleTypeTargetCount;
+  [DefaultValue(true)]
+  public bool PropagateNamedProperties { get; set; }
 
   /// <summary>
-  /// An arbitrary example of using a secret input value.
+  /// Indicates whether named properties should be propagated. Default is true.
   /// </summary>
-  [Required]
-  [Secret]
-  public string ExternalServiceKey;
+  [DefaultValue(true)]
+  public bool PrefixMergedDefinitionProperties { get; set; }
+
+  /// <summary>
+  /// Specifies the prefix for the output branch. Default is "PowerBI-Ready".
+  /// </summary>
+  [DefaultValue("bi-ready")]
+  public string TargetModelPrefix { get; set; }
 }
