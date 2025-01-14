@@ -9,7 +9,7 @@
 
     <!-- Allow multiple RIDs for cross-platform compatibility -->
     <RuntimeIdentifier Condition="'$(OS)' == 'Windows_NT'">win-x64</RuntimeIdentifier>
-    <RuntimeIdentifier Condition="'$(OS)' != 'Windows_NT'">alpine-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(OS)' != 'Windows_NT'">linux-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

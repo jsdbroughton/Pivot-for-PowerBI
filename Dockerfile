@@ -8,10 +8,10 @@ WORKDIR /src
 COPY SpecklePowerPivotForRevit/ ./
 
 # Restore dependencies
-RUN dotnet restore --use-current-runtime --runtime alpine-x64
+RUN dotnet restore --use-current-runtime --runtime linux-x64
 
 # Publish application
-RUN dotnet publish --use-current-runtime --runtime alpine-x64 --self-contained false --no-restore -o /publish
+RUN dotnet publish --use-current-runtime --runtime linux-x64 --self-contained false --no-restore -o /publish
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/runtime:9.0-alpine AS runtime
