@@ -20,17 +20,37 @@ public static class Models
     return (await client.Model.Get(modelId, projectId)).name;
   }
 
-  internal static string GenerateTargetModelName(string sourceModelName, string prefix)
+  public static string GenerateTargetModelName(string sourceModelName, string prefix)
   {
+    if (string.IsNullOrEmpty(sourceModelName))
+    {
+      throw new ArgumentException(
+        "Source model name cannot be null or empty",
+        nameof(sourceModelName)
+      );
+    }
+
+    if (string.IsNullOrEmpty(prefix))
+    {
+      throw new ArgumentException("Prefix cannot be null or empty", nameof(prefix));
+    }
+
     // Ensure the prefix doesn't start with a slash
     prefix = prefix.TrimStart('/');
 
-    // Split the source model name into parts
-    var parts = sourceModelName.Split('/', StringSplitOptions.RemoveEmptyEntries);
+    if (string.IsNullOrEmpty(prefix))
+    {
+      throw new ArgumentException(
+        "Prefix cannot be just a forward slash",
+        nameof(prefix)
+      );
+    }
 
-    // Combine the prefix with the original model path
-    var targetModelName = $"{prefix}/{string.Join("/", parts)}";
+    // Split and clean both prefix and source model name
+    var cleanPrefix = prefix.Trim('/');
+    var modelParts = sourceModelName.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-    return targetModelName;
+    // Join all parts ensuring no double slashes
+    return $"{cleanPrefix}/{string.Join("/", modelParts)}";
   }
 }
