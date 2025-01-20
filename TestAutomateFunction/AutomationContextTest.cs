@@ -33,9 +33,10 @@ public sealed class AutomationContextTest : IDisposable
   {
     var inputs = new FunctionInputs
     {
-      ResolveInstances = true,
-      PropagateNamedProperties = true,
-      TargetModelPrefix = "bi-ready"
+      // ResolveInstances = true,
+      // PropagateNamedProperties = true,
+      TargetModelPrefix = "bi-ready",
+      // PrefixMergedDefinitionProperties = true
     };
 
     var automationRunData = await TestAutomateUtils.CreateTestRun(_client);
