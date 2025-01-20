@@ -10,24 +10,6 @@ namespace SpecklePowerPivotForRevit;
 public struct FunctionInputs
 {
   /// <summary>
-  /// Determines whether instances should be resolved. Default is true.
-  /// </summary>
-  [DefaultValue(true)]
-  public bool ResolveInstances { get; set; }
-
-  /// <summary>
-  /// Indicates whether named properties should be propagated. Default is true.
-  /// </summary>
-  [DefaultValue(true)]
-  public bool PropagateNamedProperties { get; set; }
-
-  /// <summary>
-  /// Indicates whether named properties should be propagated. Default is true.
-  /// </summary>
-  [DefaultValue(true)]
-  public bool PrefixMergedDefinitionProperties { get; set; }
-
-  /// <summary>
   /// Specifies the prefix for the output branch. Default is "PowerBI-Ready".
   /// </summary>
   [DefaultValue("bi-ready")]
