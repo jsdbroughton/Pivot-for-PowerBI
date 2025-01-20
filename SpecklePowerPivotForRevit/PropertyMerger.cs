@@ -9,7 +9,8 @@ public static class PropertyMerger
     Base target,
     string key,
     object? targetValue,
-    object? sourceValue
+    object? sourceValue,
+    HashSet<string> PropsToSkip
   )
   {
     if (sourceValue == null)
@@ -26,7 +27,7 @@ public static class PropertyMerger
     switch (targetValue)
     {
       case Base targetBase when sourceValue is Base sourceBase:
-        MergeBaseObjects(targetBase, sourceBase);
+        MergeBaseObjects(targetBase, sourceBase, PropsToSkip);
         break;
       case IList targetList when sourceValue is IList sourceList:
         MergeLists(targetList, sourceList);
@@ -40,14 +41,19 @@ public static class PropertyMerger
     }
   }
 
-  private static void MergeBaseObjects(Base targetBase, Base sourceBase)
+  private static void MergeBaseObjects(
+    Base targetBase,
+    Base sourceBase,
+    HashSet<string> PropsToSkip
+  )
   {
-    foreach (var kvp in sourceBase.GetMembers())
+    foreach (
+      var kvp in sourceBase
+        .GetMembers(DynamicBaseMemberType.All)
+        .Where(kvp => !PropsToSkip.Contains(kvp.Key))
+    )
     {
-      var newKey = AutomateFunction.PrefixMergedDefinitionProperties
-        ? $"d_{kvp.Key}"
-        : kvp.Key;
-      targetBase[newKey] = kvp.Value;
+      targetBase[kvp.Key] = kvp.Value;
     }
   }
 
