@@ -6,68 +6,79 @@ namespace SpecklePowerPivotForRevit;
 
 public static class Processor
 {
-  internal static readonly HashSet<string> PropsToSkip = CreatePropsToSkip(
-    DefaultTraversal.ElementsPropAliases,
-    new[] { "id", "applicationId", "referencedId", "elementId", },
-    new[] { "speckle_type", "totalChildrenCount", "materialQuantities", }
-  );
+    public static readonly HashSet<string> PropsToSkip = CreatePropsToSkip(
+        DefaultTraversal.ElementsPropAliases,
+        ["id", "applicationId", "referencedId", "elementId"],
+        ["speckle_type", "totalChildrenCount", "materialQuantities"]
+    );
 
-  internal static Base? ProcessObject(Base baseObject)
-  {
-    switch (baseObject)
+    public static Base? ProcessObject(Base baseObject)
     {
-      case Collection:
-        return null;
-      case RevitInstance instance:
-      {
-        if (!AutomateFunction.ResolveInstances)
+        switch (baseObject)
         {
-          return instance;
+            case Collection:
+                return null;
+            case RevitInstance instance:
+            {
+                // For instances, use the definition's type
+                if (instance.definition["speckle_type"] is string definitionType)
+                {
+                    instance["effective_speckle_type"] = definitionType;
+                }
+
+                foreach (
+                    var (definitionPropKey, definitionPropValue) in instance.definition
+                        .GetMembers(DynamicBaseMemberType.All)
+                        .ToList()
+                )
+                {
+                    if (PropsToSkip.Contains(definitionPropKey))
+                    {
+                        continue; // Skip merging for specified properties
+                    }
+
+
+                    if (!instance.IsPropNameValid(definitionPropKey, out _))
+                    {
+                        continue;
+                    }
+
+
+                    if (
+                        instance
+                        .GetMembers(DynamicBaseMemberType.All)
+                        .TryGetValue(definitionPropKey, out var instancePropValue)
+                    )
+                    {
+                        PropertyMerger.MergeProperties(
+                            instance,
+                            definitionPropKey,
+                            instancePropValue,
+                            definitionPropValue,
+                            PropsToSkip
+                        );
+                    }
+                    else
+                    {
+                        ((dynamic)instance)[definitionPropKey] = definitionPropValue;
+                    }
+                }
+
+                return instance;
+            }
+            default:
+                if (baseObject["speckle_type"] is string type)
+                {
+                    baseObject["effective_speckle_type"] = type;
+                }
+                return baseObject;
         }
-
-        foreach (
-          var (definitionPropKey, definitionPropValue) in instance.definition
-            .GetMembers()
-            .ToList()
-        )
-        {
-          if (PropsToSkip.Contains(definitionPropKey))
-          {
-            continue; // Skip merging for specified properties
-          }
-
-          if (!instance.IsPropNameValid(definitionPropKey, out _))
-            continue;
-
-          if (
-            instance
-              .GetMembers()
-              .TryGetValue(definitionPropKey, out var instancePropValue)
-          )
-          {
-            PropertyMerger.MergeProperties(
-              instance,
-              definitionPropKey,
-              instancePropValue,
-              definitionPropValue
-            );
-          }
-          else
-          {
-            ((dynamic)instance)[definitionPropKey] = definitionPropValue;
-          }
-        }
-        return instance;
-      }
-      default:
-        return baseObject;
     }
-  }
 
-  private static HashSet<string> CreatePropsToSkip(
-    params IEnumerable<string>[] propertyLists
-  )
-  {
-    return new HashSet<string>(propertyLists.SelectMany(list => list));
-  }
+    private static HashSet<string> CreatePropsToSkip(
+        params IEnumerable<string>[] propertyLists
+    )
+    {
+        return [..propertyLists.SelectMany(list => list)];
+    }
 }
