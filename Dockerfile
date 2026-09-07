@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-env
 
 # Set working directory
 WORKDIR /src
@@ -14,7 +14,7 @@ RUN dotnet restore --use-current-runtime --runtime linux-x64
 RUN dotnet publish --use-current-runtime --runtime linux-x64 --self-contained false --no-restore -o /publish
 
 # Stage 2: Runtime
-FROM mcr.microsoft.com/dotnet/runtime:9.0 AS runtime
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS runtime
 
 # Set working directory
 WORKDIR /publish
